@@ -31,7 +31,7 @@ class ServerTest extends JUnitSuite with ShouldMatchers{
     new ServerSocket(port).close // if port is free should be no exception here
   }
 
-  @Test(timeout=1000)
+  @Test(timeout=10000)
   def send{
     val server = new Server
     server.start(port)
