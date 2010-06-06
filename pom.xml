@@ -78,14 +78,9 @@
             <version>${scala.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-compiler</artifactId>
-            <version>${scala.version}</version>
-        </dependency>
-        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.9</version>
+            <version>1.2.16</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
