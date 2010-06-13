@@ -4,9 +4,9 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.junit.JUnitSuite
 import org.junit.Test
 import org.junit.Assert._
-import java.net.{Socket, ServerSocket}
 import Server._
 import java.io.{OutputStreamWriter, ByteArrayOutputStream, DataInputStream, DataOutputStream}
+import java.net.{SocketException, Socket, ServerSocket}
 
 class ServerTest extends JUnitSuite with ShouldMatchers {
   val port: Int = 8888
@@ -42,15 +42,23 @@ class ServerTest extends JUnitSuite with ShouldMatchers {
     server.stop
   }
 
-  @Test/*(timeout = 10000)*/
+  @Test(timeout = 10000)
   def sendInvalidData {
     withServer(server => {
       /*"server" should "not accept non-latin characters" in*/ {
-
         val illegalString = "Здравствуй, мир!!!"
         val result = sendAndGetResult(illegalString)
         assertEquals(RESULT_FAIL, result)
       }
+
+      /*"server" should "not accept data more than 10Mb" in*/ {
+        val illegalChars = new Array[Char](10 * 1024 * 1024)
+        for (i <- 0 until illegalChars.length) {
+          illegalChars(i) = 'a'; }
+        val result = sendAndGetResult(new String(illegalChars))
+        assertEquals(RESULT_FAIL, result)
+      }
+
     })
   }
 
@@ -58,13 +66,13 @@ class ServerTest extends JUnitSuite with ShouldMatchers {
   //--------------------------- Internal testes --------------------------
 
   @Test
-  def test_StringToByteArray{
+  def test_StringToByteArray {
     val str = "Hello World"
     val result = StringToByteArray(str)
 
     assertEquals(str.length, result.length)
 
-    for (i <- 0 until str.length){
+    for (i <- 0 until str.length) {
       assertEquals(str.charAt(i).toInt, result(i))
     }
   }
@@ -92,13 +100,18 @@ class ServerTest extends JUnitSuite with ShouldMatchers {
     val inputStream = new DataInputStream(clientSocketToSend.getInputStream)
 
     outputStream.writeInt(data.length)
-    outputStream.write(data)
+    try {
+      outputStream.write(data)
+      val result = inputStream.readInt
 
-    val result = inputStream.readInt
+      clientSocketToSend.close
 
-    clientSocketToSend.close
+      result
+    } catch {
+      case s: SocketException => RESULT_FAIL   // if data is invalid server may close connection before all buffer will be read
+    }
 
-    result
+
   }
 
   private def StringToByteArray(s: String) = {
