@@ -19,7 +19,7 @@ class Server {
   @volatile private var stopped = true
   @volatile private var count = 0
 
-  def processNewConnection(socket: Socket): Unit = {
+  private def processNewConnection(socket: Socket): Unit = {
     thread {
       count += 1
       logger.debug("about to process connection #" + count)
@@ -72,7 +72,7 @@ class Server {
     }
   }
 
-  def dataIsCorrect(data: Array[Char]) = {
+  private def dataIsCorrect(data: Array[Char]) = {
     data.forall(c => {
       (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
     })
