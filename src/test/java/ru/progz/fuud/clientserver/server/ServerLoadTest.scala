@@ -13,7 +13,7 @@ class ServerLoadTest extends JUnitSuite with ShouldMatchers with Log4jLogger {
 
   @Test // server should handle unlimited connections
   def maxConnections {
-    val server = new Server
+    /*val server = new Server
     server.start(port)
 
     val socketsList = ListBuffer[Socket]()
@@ -31,25 +31,6 @@ class ServerLoadTest extends JUnitSuite with ShouldMatchers with Log4jLogger {
 
     Thread.sleep(10000)
 
-    server.stop
-  }
-
-  @Test
-  def testActors {
-    import scala.actors.Actor._
-    for (i <- 1 to 10000) {
-      actor {
-        val num = i
-        //logger.debug(num)
-        println(num)
-        try {
-          Thread.sleep(Integer.MAX_VALUE)
-        } catch {
-          case e: Throwable => logger.error("error", e)
-        }
-        logger.debug("exited " + num)
-      }
-    }
-    Thread.sleep(1000)
+    server.stop */
   }
 }
