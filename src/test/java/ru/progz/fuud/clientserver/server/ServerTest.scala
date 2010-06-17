@@ -1,14 +1,15 @@
 package ru.progz.fuud.clientserver.server
 
 import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.junit.JUnitSuite
 import org.junit.Test
 import org.junit.Assert._
 import Server._
 import java.io.{OutputStreamWriter, ByteArrayOutputStream, DataInputStream, DataOutputStream}
 import java.net.{SocketException, Socket, ServerSocket}
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
+import org.scalatest.FlatSpec
 
-class ServerTest extends JUnitSuite with ShouldMatchers {
+class ServerTest extends FlatSpec with ShouldMatchers {
   val port: Int = 8888
   val localhost = "127.0.0.1"
 
@@ -45,13 +46,13 @@ class ServerTest extends JUnitSuite with ShouldMatchers {
   @Test(timeout = 10000)
   def sendInvalidData {
     withServer(server => {
-      /*"server" should "not accept non-latin characters" in*/ {
+      "server" should "not accept non-latin characters" in {
         val illegalString = "Здравствуй, мир!!!"
         val result = sendAndGetResult(illegalString)
         assertEquals(RESULT_FAIL, result)
       }
 
-      /*"server" should "not accept data more than 10Mb" in*/ {
+      "server" should "not accept data more than 10Mb" in {
         val illegalChars = new Array[Char](10 * 1024 * 1024)
         for (i <- 0 until illegalChars.length) {
           illegalChars(i) = 'a'; }
