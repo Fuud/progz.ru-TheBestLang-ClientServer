@@ -16,6 +16,6 @@ class OnDiskDataStorage(file_name:String) extends DataStorage{
 
   def get = {
     os.flush()
-    Source.fromFile(new File(file_name))(new Codec(Charset.forName("US-ASCII"))).getLines(newLine)
+    Source.fromFile(new File(file_name), "US-ASCII").getLines()
   }
 }
