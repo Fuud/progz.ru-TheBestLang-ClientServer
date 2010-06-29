@@ -12,7 +12,9 @@ object Server extends Log4jLogger {
   val MAX_DATA_LENGTH = 10 * 1024 * 1024
 }
 
-class Server {
+class Server(@volatile private var dataStorage: DataStorage) {
+  def this() = this (null)
+
   import Server._
 
   private var s: Option[ServerSocket] = None;
@@ -46,6 +48,9 @@ class Server {
   private def saveValidData(data: String) {
     if (logger.isTraceEnabled) {
       logger.trace("valid data to save: " + data)
+    }
+    if (dataStorage != null) {
+      dataStorage.put(data)
     }
   }
 
@@ -101,5 +106,9 @@ class Server {
     stopped = true
     s.foreach(_.close)
     s = None
+  }
+
+  def setDataStorage(dataStorage: DataStorage) {
+    this.dataStorage = dataStorage
   }
 }

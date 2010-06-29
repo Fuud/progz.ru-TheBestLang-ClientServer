@@ -7,8 +7,11 @@ import Server._
 import java.io.{OutputStreamWriter, ByteArrayOutputStream, DataInputStream, DataOutputStream}
 import java.net.{SocketException, Socket, ServerSocket}
 import org.scalatest.FlatSpec
+import org.scalatest.mock.EasyMockSugar
+import org.easymock.EasyMock._
+import org.easymock.EasyMock.{eq => equal_}
 
-class ServerTest extends FlatSpec with ShouldMatchers {
+class ServerTest extends FlatSpec with ShouldMatchers with EasyMockSugar {
   val port: Int = 8888
   val localhost = "127.0.0.1"
 
@@ -31,20 +34,40 @@ class ServerTest extends FlatSpec with ShouldMatchers {
 
   @Test(timeout = 10000)
   def send {
-    val server = new Server
+    val dataStorage = mock[DataStorage]
+    val server = new Server(dataStorage)
     server.start(port)
 
     val dataToSend = "HelloWorld"
+
+    expecting{
+      dataStorage.put(equal_(dataToSend))
+    }
+
+    replay(dataStorage)
+
     val result = sendAndGetResult(dataToSend)
 
     assertEquals(RESULT_OK, result)
 
     server.stop
+
+    Thread.sleep(500) // wait while data is beeing processing
+
+    verify(dataStorage);
   }
 
   @Test(timeout = 10000)
   def sendInvalidData {
+    val dataStorage = mock[DataStorage]
+    expecting{
+      // expect noting since we send invalid data only
+    }
+    replay(dataStorage)
+
     withServer(server => {
+      server.setDataStorage(dataStorage)
+
       "server" should "not accept non-latin characters" in {
         val illegalString = "Здравствуй, мир!!!"
         val result = sendAndGetResult(illegalString)
@@ -60,6 +83,10 @@ class ServerTest extends FlatSpec with ShouldMatchers {
       }
 
     })
+
+    Thread.sleep(500) // wait while data is beeing processing
+
+    verify(dataStorage);
   }
 
 
@@ -120,5 +147,9 @@ class ServerTest extends FlatSpec with ShouldMatchers {
     osw.write(s)
     osw.close
     bas.toByteArray
+  }
+
+  override def mock[T <: AnyRef](implicit manifest: Manifest[T]): T = {
+    createMock(manifest.erasure.asInstanceOf[Class[T]])
   }
 }
