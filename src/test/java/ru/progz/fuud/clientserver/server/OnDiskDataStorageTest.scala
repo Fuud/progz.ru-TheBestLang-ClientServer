@@ -15,7 +15,7 @@ class OnDiskDataStorageTest extends JUnitSuite with ShouldMatchers with Log4jLog
   }
 
   @Test
-  def getPut{
+  def getAndPut{
     val storage = getNewStorage
 
     val value: String = "Hello World!!!"
@@ -32,4 +32,6 @@ class OnDiskDataStorageTest extends JUnitSuite with ShouldMatchers with Log4jLog
 
     assertArrayEquals(Array(value, value2).toArray[Object], messages2)
   }
+
+  
 }

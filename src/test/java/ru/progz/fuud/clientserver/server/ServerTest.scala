@@ -6,7 +6,6 @@ import org.junit.Assert._
 import Server._
 import java.io.{OutputStreamWriter, ByteArrayOutputStream, DataInputStream, DataOutputStream}
 import java.net.{SocketException, Socket, ServerSocket}
-import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 import org.scalatest.FlatSpec
 
 class ServerTest extends FlatSpec with ShouldMatchers {
